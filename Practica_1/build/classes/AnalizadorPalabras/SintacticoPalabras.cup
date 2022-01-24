@@ -1,0 +1,41 @@
+package AnalizadorPalabras;
+
+import java_cup.runtime.*;
+import java.util.ArrayList;
+
+parser code
+{:
+    ArrayList<String> words = new ArrayList<String>();
+    
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    } 
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+        " no reconocido."); 
+    }  
+
+:};
+
+terminal String COMA, PUNTO, WORD;
+
+non terminal S, L;
+
+start with S;
+
+S ::= L PUNTO
+{:  
+    System.out.print("> Salida: ");
+    for(int i = 1; i < words.size(); i++) {
+        System.out.print(words.get(i) + ", ");
+    }
+    System.out.print(words.get(0) + ".\n");
+:}
+;
+
+L ::= L COMA WORD:x {: words.add(x); :}
+    | WORD:x        {: words.add(x); :}
+;
