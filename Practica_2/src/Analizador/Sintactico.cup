@@ -1,0 +1,60 @@
+package Analizador;
+
+import java_cup.runtime.*;
+
+import practica_2.Num;
+
+parser code
+{:
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    } 
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+        " no reconocido."); 
+    }  
+:};
+
+terminal UNO, CERO, PUNTO;
+
+non terminal S;
+non terminal double X;
+non terminal int N;
+non terminal Num L;
+
+start with S;
+
+S ::= X:num
+{: 
+    System.out.println("> Salida: " + num);
+:}
+;
+
+X ::= L:l1 PUNTO L:l2 {: RESULT = l1.getValor1() + l2.getValor2(); :}
+    | L:l   {: RESULT = l.getValor1(); :}
+;
+
+L ::= L:l1 N:num 
+{:
+    int valor1 = l1.getValor1()*2 + num;
+    RESULT = l1;
+    RESULT.setAux(l1.getAux()*0.5);
+    double valor2 = l1.getValor2() + num*l1.getAux();
+    RESULT.setValor1(valor1);
+    RESULT.setValor2(valor2);
+:}
+    | N:num   
+{:
+    RESULT = new Num();
+    RESULT.setValor1(num);
+    RESULT.setAux(0.5);
+    RESULT.setValor2(num*0.5);
+:}
+;
+
+N ::= UNO  {: RESULT = 1; :}
+    | CERO {: RESULT = 0; :}
+;
